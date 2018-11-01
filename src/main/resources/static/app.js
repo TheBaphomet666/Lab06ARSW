@@ -50,7 +50,8 @@ var app = (function () {
 
         init: function () {
             var can = document.getElementById("canvas");
-            
+            $("#connect").prop("disabled", true);
+            $("#disconnect").prop("disabled", false);
             //websocket connection
             connectAndSubscribe();
         },
@@ -64,6 +65,8 @@ var app = (function () {
         },
 
         disconnect: function () {
+            $("#connect").prop("disabled", false);
+            $("#disconnect").prop("disabled", true);
             if (stompClient !== null) {
                 stompClient.disconnect();
             }
@@ -73,3 +76,12 @@ var app = (function () {
     };
 
 })();
+
+$(function () {
+    $("form").on('submit', function (e) {
+        e.preventDefault();
+    });
+    $( "#connect" ).click(function() { app.init(); });
+    $( "#disconnect" ).click(function() { app.disconnect(); });
+
+});

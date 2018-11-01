@@ -1,4 +1,4 @@
-package edu.eci.arsw.msgbroker;
+package java.edu.eci.arsw.msgbroker;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
