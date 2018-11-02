@@ -35,13 +35,30 @@ var app = (function () {
         
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
+
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
+            stompClient.subscribe('/topic/points', function (eventbody) {
                 
                 
             });
         });
 
+    };
+
+    var setConnected = function(connected) {
+        $("#connect").prop("disabled", connected);
+        $("#disconnect").prop("disabled", !connected);
+        if (connected) {
+            $("#conversation").show();
+        }
+        else {
+            $("#conversation").hide();
+        }
+        $("#greetings").html("");
+    };
+
+    var sendPoint(){
+         stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
     };
     
     
@@ -50,10 +67,9 @@ var app = (function () {
 
         init: function () {
             var can = document.getElementById("canvas");
-            $("#connect").prop("disabled", true);
-            $("#disconnect").prop("disabled", false);
             //websocket connection
             connectAndSubscribe();
+            setConnected(true);
         },
 
         publishPoint: function(px,py){
@@ -65,8 +81,7 @@ var app = (function () {
         },
 
         disconnect: function () {
-            $("#connect").prop("disabled", false);
-            $("#disconnect").prop("disabled", true);
+
             if (stompClient !== null) {
                 stompClient.disconnect();
             }
