@@ -15,6 +15,7 @@ var app = (function () {
         ctx.beginPath();
         ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
         ctx.stroke();
+        sendPoint(point);
     };
     
     
@@ -57,8 +58,8 @@ var app = (function () {
         $("#greetings").html("");
     };
 
-    var sendPoint(){
-         stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    var sendPoint= function(point){
+         stompClient.send("/topic/points", {}, JSON.stringify(point));
     };
     
     

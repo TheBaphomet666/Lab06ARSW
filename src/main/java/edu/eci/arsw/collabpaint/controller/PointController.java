@@ -11,6 +11,6 @@ public class PointController {
     @MessageMapping("/points")
     @SendTo("/topic/points")
     public Point point(Point pt) throws Exception{
-        return
+        return pt;
     }
 }
