@@ -15,7 +15,7 @@ var app = (function () {
         ctx.beginPath();
         ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
         ctx.stroke();
-        sendPoint(point);
+        
     };
     
     
@@ -38,8 +38,9 @@ var app = (function () {
         stompClient.connect({}, function (frame) {
 
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/points', function (eventbody) {
-                
+            stompClient.subscribe('/topic/points', function (message) {
+                var pt=JSON.parse(message.body);
+                addPointToCanvas(pt);
                 
             });
         });
@@ -50,12 +51,12 @@ var app = (function () {
         $("#connect").prop("disabled", connected);
         $("#disconnect").prop("disabled", !connected);
         if (connected) {
-            $("#conversation").show();
+            $("#canvas").show();
         }
         else {
-            $("#conversation").hide();
+            $("#canvas").hide();
         }
-        $("#greetings").html("");
+        
     };
 
     var sendPoint= function(point){
@@ -77,6 +78,7 @@ var app = (function () {
             var pt=new Point(px,py);
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
+            sendPoint(pt);
 
             //publicar el evento
         },
@@ -88,6 +90,9 @@ var app = (function () {
             }
             setConnected(false);
             console.log("Disconnected");
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
     };
 
