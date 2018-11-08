@@ -63,6 +63,10 @@ var app = (function () {
          stompClient.send("/topic/points", {}, JSON.stringify(point));
     };
     
+    var eventCanvas = function(event) {
+        let coordenadas = getMousePosition(event);
+        app.publishPoint(coordenadas.x,coordenadas.y);
+    };
     
 
     return {
@@ -72,6 +76,11 @@ var app = (function () {
             //websocket connection
             connectAndSubscribe();
             setConnected(true);
+            if(window.PointerEvent){
+                canvas.addEventListener("pointerdown", eventCanvas);
+            }else{
+                canvas.addEventListener("mousedown", eventCanvas);
+            }
         },
 
         publishPoint: function(px,py){
