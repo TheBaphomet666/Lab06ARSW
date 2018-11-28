@@ -17,6 +17,21 @@ var app = (function () {
         ctx.stroke();
         
     };
+    var addPolygonToCAnvas = function(pta){
+
+        var canvas = document.getElementById("canvas");
+        var c2 = canvas.getContext("2d");
+        var Array =JSON.parse(pta);
+        c2.fillStyle = '#f00';
+        c2.beginPath();
+        c2.moveTo(Array[0].x,Array[0].y);
+        for (var i=1;i<Array.length;i++) {
+            c2.lineTo(Array[i].x,Array[i].y);
+        }
+        c2.closePath();
+        c2.fill();
+
+    };
     
     
     var getMousePosition = function (evt) {
@@ -35,13 +50,17 @@ var app = (function () {
         stompClient = Stomp.over(socket);
         var id = document.getElementById("frame").value.toString();
         //subscribe to /topic/TOPICXX when connections succeed
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, async function (frame) {
 
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/points'+id, function (message) {
-                var pt=JSON.parse(message.body);
+            await stompClient.subscribe("/topic/newpoint." + id, function (message) {
+                var pt = JSON.parse(message.body);
                 addPointToCanvas(pt);
-                
+
+            });
+            await stompClient.subscribe("/topic/newpolygon." + id, function (message) {
+                addPolygonToCAnvas(message.body);
+
             });
         });
 
@@ -61,7 +80,7 @@ var app = (function () {
 
     var sendPoint= function(point){
         var id = document.getElementById("frame").value.toString();
-         stompClient.send("/topic/points"+id, {}, JSON.stringify(point));
+         stompClient.send("/app/newpoint."+id, {}, JSON.stringify(point));
     };
     
     var eventCanvas = function(event) {
