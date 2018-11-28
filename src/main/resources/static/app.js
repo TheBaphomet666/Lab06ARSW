@@ -33,12 +33,12 @@ var app = (function () {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
-        
+        var id = document.getElementById("frame").value.toString();
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
 
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/points', function (message) {
+            stompClient.subscribe('/topic/points'+id, function (message) {
                 var pt=JSON.parse(message.body);
                 addPointToCanvas(pt);
                 
@@ -60,7 +60,8 @@ var app = (function () {
     };
 
     var sendPoint= function(point){
-         stompClient.send("/topic/points", {}, JSON.stringify(point));
+        var id = document.getElementById("frame").value.toString();
+         stompClient.send("/topic/points"+id, {}, JSON.stringify(point));
     };
     
     var eventCanvas = function(event) {
